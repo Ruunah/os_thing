@@ -11,19 +11,20 @@ start:
 ;Params:
 ;- ds:si points to string
 ;
+
 puts:
    ;save registers we will modify
    push si
    push ax
 
 .loop:
-   loadsb         ;loads next character in al
+   lodsb          ;loads next character in al
    or al, al      ;verify if next character is null
    jz .done
-   jmp .loop
-
    mov ah, 0x0e   ;call bios interrupt
+   mov bh, 0      ;set page number to 0
    int 0x10
+   jmp .loop
 
 .done:
    pop ax
@@ -53,4 +54,4 @@ main:
 msg_hello: db'Hello World!', ENDL, 0
 
 times 510-($-$$) db 0
-dw 0AA55h
+dw 0aa55h

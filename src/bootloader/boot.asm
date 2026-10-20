@@ -15,7 +15,7 @@ bdb_sector_per_cluster:    db 1
 bdb_fat_count:             db 2
 bdb_dir_entries_count:     dw 0E0h
 dbd_total_sectors:         dw 2880                 ;2880 * 512 = 1.44MB
-bdb_media_descriptor_type  db 0F0h                 ;F0 = 3.5" floppy disk
+bdb_media_descriptor_type: db 0F0h                 ;F0 = 3.5" floppy disk
 bdb_sectors_per_fat:       dw 9                    ;9 sectors/fat
 bdb_sectors_per_track      dw 18
 bdb_heads:                 dw 2
@@ -80,6 +80,10 @@ main:
 
 .halt:
    jmp .halt
+
+;
+;Disk routines
+;
 
 
 msg_hello: db'Hello World!', ENDL, 0

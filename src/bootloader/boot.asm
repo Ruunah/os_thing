@@ -82,8 +82,12 @@ main:
    call disk_read
 
    ; print message
+   mov si, msg_bootloader
+   push si
+   call puts
    mov si, msg_hello
    call puts
+
 
    hlt
 ;
@@ -209,6 +213,7 @@ disk_reset:
    ret
 
 msg_hello:              db'Hello World!', ENDL, 0
+msg_bootloader:         db 'BOOTLOADER RUNNING', 0
 msg_read_failed:        db'Read from disk failed!', ENDL, 0
 
 times 510-($-$$) db 0

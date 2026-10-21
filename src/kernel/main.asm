@@ -42,7 +42,7 @@ main:
    mov sp, 0x7c00    ;stack grows downwards from where we are loaded in memory
 
    ; print message
-   mov si, msg_hello
+   mov si, msg_kernel
    call puts
 
    hlt
@@ -51,7 +51,7 @@ main:
    jmp .halt
 
 
-msg_hello: db'Hello World!', ENDL, 0
+msg_kernel: db'Kernel Working!', ENDL, 0
 
 times 510-($-$$) db 0
 dw 0aa55h

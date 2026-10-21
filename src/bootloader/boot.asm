@@ -87,8 +87,9 @@ main:
    mov si, msg_bootloader
    call puts
 
-
+   cli
    hlt
+
 ;
 ;Error handlers
 ;
@@ -106,7 +107,7 @@ wait_key_and_reboot:
 
 .halt:
    cli                        ;disable interrupts, this way we cant get out of "halt" state
-   jmp .halt
+   hlt
 
 
 ;
@@ -212,7 +213,7 @@ disk_reset:
    ret
 
 msg_hello:              db'Hello World!', ENDL, 0
-msg_bootloader:         db 'BOOTLOADER RUNNING', 0
+msg_bootloader:         db'BOOTLOADER RUNNING', ENDL, 0
 msg_read_failed:        db'Read from disk failed!', ENDL, 0
 
 times 510-($-$$) db 0

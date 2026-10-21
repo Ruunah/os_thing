@@ -82,10 +82,9 @@ main:
    call disk_read
 
    ; print message
-   mov si, msg_bootloader
-   push si
-   call puts
    mov si, msg_hello
+   call puts
+   mov si, msg_bootloader
    call puts
 
 

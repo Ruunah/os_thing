@@ -28,7 +28,7 @@ ebr_drive_number:          db 0                    ;0x00 floppy, 0x80 hdd, usele
 ebr_signature:             db 29h
 ebr_volume_id:             db 12h, 34h, 56h, 78h   ;serial number, value doesn't matter
 ebr_volume_label:          db 'NANOBYTE OS'        ;11 bytes, padded with spaces
-ebr_system_id:             db 'FAT12   '              ;
+ebr_system_id:             db 'FAT12    '
 
 ;
 ;Code goes here
@@ -49,11 +49,11 @@ puts:
    push ax
 
 .loop:
-   lodsb          ;loads next character in al
-   or al, al      ;verify if next character is null
+   lodsb                                           ;loads next character in al
+   or al, al                                       ;verify if next character is null
    jz .done
-   mov ah, 0x0e   ;call bios interrupt
-   mov bh, 0      ;set page number to 0
+   mov ah, 0x0e                                    ;call bios interrupt
+   mov bh, 0                                       ;set page number to 0
    int 0x10
    jmp .loop
 
@@ -64,27 +64,25 @@ puts:
 
 main:
    ;setup data segments
-   mov ax, 0         ;can`t write to ds/es directly
+   mov ax, 0                                       ;can`t write to ds/es directly
    mov ds, ax
    mov es, ax
    
    ;setup stack
    mov ss, ax
-   mov sp, 0x7c00    ;stack grows downwards from where we are loaded in memory
+   mov sp, 0x7c00                                  ;stack grows downwards from where we are loaded in memory
 
    ;read something from floppy disk
    ;BIOS should set DL to drive number
    mov[ebr_drive_number], dl
 
-   mov ax, 1         ;LBA=1, second sector from disk
-   mov cl, 1         ;1 sector to read
-   mov bx, 0x7E00    ;data should be after the bootloader
+   mov ax, 1                                       ;LBA=1, second sector from disk
+   mov cl, 1                                       ;1 sector to read
+   mov bx, 0x7E00                                  ;data should be after the bootloader
    call disk_read
 
    ; print message
    mov si, msg_hello
-   call puts
-   mov si, msg_bootloader
    call puts
 
    cli
@@ -102,11 +100,11 @@ floppy_error:
 
 wait_key_and_reboot:
    mov ah, 0
-   int 16h                    ;wait for keypress
-   jmp 0FFFFh:0               ;jump to beginning of BIOS, should reboot
+   int 16h                                         ;wait for keypress
+   jmp 0FFFFh:0                                    ;jump to beginning of BIOS, should reboot
 
 .halt:
-   cli                        ;disable interrupts, this way we cant get out of "halt" state
+   cli                                             ;disable interrupts, this way we cant get out of "halt" state
    hlt
 
 
@@ -128,21 +126,21 @@ lba_to_chs:
    push ax
    push dx
 
-   xor dx, dx                          ;dx = 0
-   div word [bdb_sectors_per_track]    ;ax = LBA % SectorsPerTrack
-                                       ;dx = LBA % SectorsPerTrack
+   xor dx, dx                                      ;dx = 0
+   div word [bdb_sectors_per_track]                ;ax = LBA % SectorsPerTrack
+                                                   ;dx = LBA % SectorsPerTrack
 
-   inc dx                              ;dx = (LBA % SectorsPerTrack + 1) = sector
-   mov cx, dx                          ;cx = sector
+   inc dx                                          ;dx = (LBA % SectorsPerTrack + 1) = sector
+   mov cx, dx                                      ;cx = sector
 
-   xor dx, dx                          ;dx = 0
-   div word [bdb_heads]                ;ax = (LBA % SectorsPerTrack) / Heads = cylinder
-                                       ;dx = (LBA / SectorsPerTrack) % Heads = head
+   xor dx, dx                                      ;dx = 0
+   div word [bdb_heads]                            ;ax = (LBA % SectorsPerTrack) / Heads = cylinder
+                                                   ;dx = (LBA / SectorsPerTrack) % Heads = head
 
-   mov dh, dl                          ;dh = head
-   mov ch, al                          ;ch = cylinder (lower 8 bits)
+   mov dh, dl                                      ;dh = head
+   mov ch, al                                      ;ch = cylinder (lower 8 bits)
    shl ah, 6
-   or cl, ah                           ;put upper 2 bits of cylinder in CL
+   or cl, ah                                       ;put upper 2 bits of cylinder in CL
 
    pop dx
    pop ax
@@ -158,17 +156,17 @@ lba_to_chs:
 ;
 disk_read:
 
-   push ax                             ;save registers we will modify
+   push ax                                         ;save registers we will modify
    push bx
    push cx
    push dx
    push di
 
-   push cx                             ;temporarely save CL (number of sectors to read)
-   call lba_to_chs                     ;compute CHS
-   pop ax                              ;AL = number of sectors to read
+   push cx                                         ;temporarely save CL (number of sectors to read)
+   call lba_to_chs                                 ;compute CHS
+   pop ax                                          ;AL = number of sectors to read
    mov ah, 02h
-   mov di, 3                           ;retry count
+   mov di, 3                                       ;retry count
 
 .retry:
    pusha
@@ -195,7 +193,7 @@ disk_read:
    pop dx
    pop cx
    pop bx
-   pop ax                             ;restore registers we modified
+   pop ax                                          ;restore registers we modified
    ret
 
 ;
@@ -212,9 +210,8 @@ disk_reset:
    popa
    ret
 
-msg_hello:              db'Hello World!', ENDL, 0
-msg_bootloader:         db'BOOTLOADER RUNNING', ENDL, 0
-msg_read_failed:        db'Read from disk failed!', ENDL, 0
+msg_hello:        db'Hello World!', ENDL, 0
+msg_read_failed:  db'Read from disk failed!', ENDL, 0
 
 times 510-($-$$) db 0
 dw 0aa55h

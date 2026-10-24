@@ -358,7 +358,7 @@ msg_kernel_not_found db 'kernel.bin file not found!', ENDL,  0
 
 ;Variables
 file_kernel_bin:     db 'KERNEL  BIN'
-kernel_cluster:      db 0
+kernel_cluster:      dw 0
 
 KERNEL_LOAD_SEGMENT  equ 0x2000
 KERNEL_LOAD_OFFSET   equ 0

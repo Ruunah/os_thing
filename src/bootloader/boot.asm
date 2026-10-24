@@ -350,14 +350,14 @@ disk_reset:
 ;Messages
 msg_load:            db 'Loading...', ENDL, 0
 msg_read_failed:     db 'Read from disk failed!', ENDL, 0
-msg_kernel_not_found db 'Kernel.bin file not found!', ENDL,  0
+msg_kernel_not_found db 'kernel.bin file not found!', ENDL,  0
 
 ;Variables
 file_kernel_bin:     db 'KERNEL  BIN'
 kernel_cluster:      db 0
 
 KERNEL_LOAD_SEGMENT  equ 0x2000
-KENREL_LOAD_OFFSET   equ 0
+KERNEL_LOAD_OFFSET   equ 0
 
 times 510-($-$$) db 0
 dw 0aa55h

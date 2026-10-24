@@ -1,10 +1,16 @@
-org 0x7c00
+org 0x0
 bits 16
 
 %define ENDL 0x0d, 0x0a
 
 start:
-   jmp main
+   ; print message
+   mov si, msg_kernel
+   call puts
+
+.halt:
+   cli
+   hlt
 
 ;
 ;Prints a string to the screen
@@ -31,27 +37,4 @@ puts:
    pop si
    ret
 
-main:
-   ;setup data segments
-   mov ax, 0         ;can't write to ds/es directly
-   mov ds, ax
-   mov es, ax
-   
-   ;setup stack
-   mov ss, ax
-   mov sp, 0x7c00    ;stack grows downwards from where we are loaded in memory
-
-   ; print message
-   mov si, msg_kernel
-   call puts
-
-   hlt
-
-.halt:
-   jmp .halt
-
-
 msg_kernel: db'Kernel Working!', ENDL, 0
-
-times 510-($-$$) db 0
-dw 0aa55h

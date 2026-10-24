@@ -77,15 +77,19 @@ start:
    inc dh
    mov [bdb_heads], dh                             ;head count
 
-   ;LBA on root directory = reserved + fats * sectors_per_fat
+   ;compute LBA of root directory = reserved + fats * sectors_per_fat
    ;note: this section can be hardcoded
    mov ax, [bdb_sectors_per_fat]
-
    mov bl, [bdb_fat_count]
    xor bh, bh
    mul bx                                          ;ax = (fats * sectors_per_fat)
    add ax, [bdb_reserved_sectors]                  ;ax = LBA of root directory
    push ax
+
+   ; compute size of root directory = (32 * number_of_entries) / bytes_per_sector
+   mov ax, [bdb_dir_entries_count]
+   shl ax, 5                                       ; ax *= 32
+   xor dx, dx                                      ; dx = 0
    div word [bdb_bytes_per_sector]                 ;number of sectors we need to read
 
    test dx, dx                                     ;if dx != 0, add 1
@@ -97,7 +101,7 @@ start:
    ;read root directiry
    mov cl, al                                      ;cl = number of sectors to read = size of root directory
    pop ax                                          ;ax = LBA of root directory
-   mov dl , [ebr_drive_number]                     ;dl = drive_number (we saved it earlier)
+   mov dl, [ebr_drive_number]                      ;dl = drive_number (we saved it earlier)
    mov bx, buffer                                  ;ex:bx = buffer
    call disk_read
 
@@ -354,7 +358,7 @@ msg_kernel_not_found db 'kernel.bin file not found!', ENDL,  0
 
 ;Variables
 file_kernel_bin:     db 'KERNEL  BIN'
-kernel_cluster:      db 0
+kernel_cluster:      dw 0
 
 KERNEL_LOAD_SEGMENT  equ 0x2000
 KERNEL_LOAD_OFFSET   equ 0

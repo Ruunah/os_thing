@@ -178,7 +178,7 @@ start:
 
 .next_cluster_after:
    cmp ax, 0x0ff8                                  ;end of chain
-   jmp .read_finish
+   jae .read_finish
 
    mov [kernel_cluster], ax
    jmp .load_kernel_loop

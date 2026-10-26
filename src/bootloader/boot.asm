@@ -15,7 +15,7 @@ bdb_sector_per_cluster:    db 1
 bdb_reserved_sectors:      dw 1
 bdb_fat_count:             db 2
 bdb_dir_entries_count:     dw 0E0h
-dbd_total_sectors:         dw 2880                 ;2880 * 512 = 1.44MB
+bdb_total_sectors:         dw 2880                 ;2880 * 512 = 1.44MB
 bdb_media_descriptor_type: db 0F0h                 ;F0 = 3.5" floppy disk
 bdb_sectors_per_fat:       dw 9                    ;9 sectors/fat
 bdb_sectors_per_track:     dw 18
@@ -29,7 +29,7 @@ ebr_drive_number:          db 0                    ;0x00 floppy, 0x80 hdd, usele
 ebr_signature:             db 29h
 ebr_volume_id:             db 12h, 34h, 56h, 78h   ;serial number, value doesn't matter
 ebr_volume_label:          db 'NANOBYTE OS'        ;11 bytes, padded with spaces
-ebr_system_id:             db 'FAT12   '          ;8 bytes
+ebr_system_id:             db 'FAT12   '           ;8 bytes
 
 ;
 ;Code goes here

@@ -56,8 +56,6 @@ start:
    ;BIOS should set DL to drive number
    mov[ebr_drive_number], dl
 
-
-
    ;show loading message
    mov si, msg_load
    call puts
@@ -72,7 +70,7 @@ start:
 
    and cl,  0x3F                                   ;remove top 2 bits
    xor ch, ch
-   mov[bdb_sectors_per_track], cx                  ;sector count
+   mov [bdb_sectors_per_track], cx                 ;sector count
 
    inc dh
    mov [bdb_heads], dh                             ;head count
@@ -180,7 +178,7 @@ start:
 
 .next_cluster_after:
    cmp ax, 0x0ff8                                  ;end of chain
-   jae .read_finish
+   jmp .read_finish
 
    mov [kernel_cluster], ax
    jmp .load_kernel_loop
@@ -232,6 +230,7 @@ puts:
    ;save registers we will modify
    push si
    push ax
+   push bx
 
 .loop:
    lodsb                                           ;loads next character in al
@@ -243,6 +242,7 @@ puts:
    jmp .loop
 
 .done:
+   pop bx
    pop ax
    pop si
    ret
@@ -284,6 +284,7 @@ lba_to_chs:
    or cl, ah                                       ;put upper 2 bits of cylinder in CL
 
    pop dx
+   mov dl, al                                      ;restore DL
    pop ax
    ret
 
@@ -306,14 +307,15 @@ disk_read:
    push cx                                         ;temporarely save CL (number of sectors to read)
    call lba_to_chs                                 ;compute CHS
    pop ax                                          ;AL = number of sectors to read
+
    mov ah, 02h
    mov di, 3                                       ;retry count
 
 .retry:
-   pusha
-   stc
-   int 13h
-   jnc .done
+   pusha                                           ;save all registers, we don't know what bios modifies
+   stc                                             ;set carry flag, some BIOS'es don't set it
+   int 13h                                         ;carry flag cleared = success
+   jnc .done                                       ;jump if carry not set
 
    ;read failed
    popa 
@@ -354,9 +356,7 @@ disk_reset:
 ;Messages
 msg_load:            db 'Loading...', ENDL, 0
 msg_read_failed:     db 'Read from disk failed!', ENDL, 0
-msg_kernel_not_found db 'kernel.bin file not found!', ENDL,  0
-
-;Variables
+msg_kernel_not_found db 'KERNEL.BIN file not found!', ENDL,  0
 file_kernel_bin:     db 'KERNEL  BIN'
 kernel_cluster:      dw 0
 
